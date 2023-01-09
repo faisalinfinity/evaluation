@@ -1,11 +1,26 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
 
-const inter = Inter({ subsets: ['latin'] })
+import {
+  Box,
+  Container,
+  Text,
+  HStack,
+  useColorMode,
+  useColorModeValue,
+  Icon,
+  Avatar,
+  Grid,
+  VStack,
+  Center,
+  Button,
+  Heading,
+} from "@chakra-ui/react";
+import axios from "axios";
+import React from "react";
 
-export default function Home() {
+export default function Home({profile,project}) {
+  console.log(profile);
   return (
     <>
       <Head>
@@ -14,9 +29,124 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-       <h1>hello2</h1>
+      <main>
+        <Box w={"100%"} as="nav">
+          <HStack
+            h={"100px"}
+            w={"100%"}
+            border={"1px solid "}
+            spacing={"100"}
+            justify="space-between"
+          >
+            <Box gap={"20px"} display={"flex"}>
+              <Text>Faisal Mujtaba</Text>
+              <Text>Project</Text> <Text>Expierence</Text>
+            </Box>
+            <Box display={"flex"} justifyContent={"space-around"}>
+              <Icon></Icon>
+              <Avatar src={profile?.avatar_url}></Avatar>
+            </Box>
+          </HStack>
+        </Box>
+        <Grid
+          templateColumns={{ base: "repeat(1,1fr)", lg: "30% 70%" }}
+          templateRows="800px"
+        >
+          <Box display={"flex"}  gap={"30px"} flexDirection={"column"} border={"1px solid "}>
+            <VStack>
+              <Box
+                w={"100%"}
+                border={"1px solid"}
+                display={"flex"}
+                flexDirection={"column"}
+                justifyContent="space-around"
+                gap={"20px"}
+              >
+                {" "}
+                <Center>
+                  <Avatar src={profile?.avatar_url}></Avatar>
+                  <h1>Faisal Mujtaba</h1>
+                </Center>
+                <Center>React| JavaScript | HTML| CSS</Center>
+                <Center>
+                  <HStack
+                    display={"flex"}
+                    justifyContent="space-around"
+                    w="100%"
+                  >
+                    <Button bg={"blue.300"}>Resume</Button>
+                    <Button bg={"green.300"}>Follow</Button>
+                  </HStack>
+                </Center>
+              </Box>
+              <Box
+                color={"teal.100"}
+                gap={"5px"}
+                border={"1px solid "}
+                display={"flex"}
+                flexWrap="wrap"
+              >
+                <Text>JavaScript</Text>
+                <Text>HTML</Text>
+                <Text>CSS</Text>
+                <Text>REACT</Text>
+                <Text>TypeScript</Text>
+                <Text>Chakra-UI</Text>
+                <Text></Text>
+              </Box>
+              <Box>
+                <VStack>
+                  <Text>
+                    Masai School
+                    <Text fontSize={"10px"}>July 2021-present</Text>
+                  </Text>
+                </VStack>
+              </Box>
+            </VStack>
+          </Box>
+          <Box border={"1px solid "}>
+            <Center>
+            <Heading>Projects</Heading>
+            </Center>
+            <Grid templateColumns={"repeat(2,1fr)"}>
+              {project?.items?.map((el)=>{
+                return <VStack key={el.id}>
+                <Button >{el.name}</Button>
+                <Text>{el.full_name}</Text>
+                <HStack>
+                  <HStack>
+                  <Button > Star-{el.stargazers_count}</Button>
+                  <Button > Fork{el.forks_count}</Button>
+                  </HStack>
+                  <Text>
+                    {el.language}
+                    
+                  </Text>
+                  
+                </HStack>
+              </VStack>
+              })}
+            </Grid>
+            
+          </Box>
+        </Grid>
       </main>
     </>
-  )
+  );
+}
+
+export async function getStaticProps(context) {
+  let res = await axios.get(`https://api.github.com/users/faisalinfinity`);
+  let data = await res.data;
+ 
+  let res2 = await axios.get(`https://api.github.com/search/repositories?q=user:faisalinfinity+fork:true&sort=updated&per_page=10&type=Repositories`);
+  let data2 = await res2.data;
+  console.log(data2);
+
+  return {
+    props: {
+      profile: data,
+      project:data2
+    },
+  };
 }
